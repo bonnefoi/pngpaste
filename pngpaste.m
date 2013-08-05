@@ -10,7 +10,8 @@ usage ()
     fprintf(stderr,
         "Usage: %s [OPTIONS] <dest.png>\n"
         "\t-v\t" "Version" "\n"
-        "\t-h,-?\t" "This usage" "\n",
+        "\t-h,-?\t" "This usage" "\n"
+        "if <dest.png> is equal to '-' output is redirected to stdout" "\n",
         APP_NAME);
 }
 
@@ -155,7 +156,10 @@ main (int argc, char * const argv[])
     int exitCode;
 
     if (image && ((pngData = extractPngData(image)) != NULL)) {
-        [pngData writeToFile:params.outputFile atomically:YES];
+        if ([params.outputFile isEqualToString:@"-"])
+            [pngData writeToFile:@"/dev/stdout" atomically:NO];
+        else
+            [pngData writeToFile:params.outputFile atomically:YES];
         exitCode = EXIT_SUCCESS;
     } else {
         fatal("No image data found on the clipboard!");
